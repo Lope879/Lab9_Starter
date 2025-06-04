@@ -69,23 +69,31 @@
     </form>
 
     <section id="error-btns">
-      <button>Console Log</button>
-      <button>Console Error</button>
-      <button>Console Count</button>
-      <button>Console Warn</button>
-      <button>Console Assert</button>
-      <button>Console Clear</button>
-      <button>Console Dir</button>
-      <button>Console dirxml</button>
-      <button>Console Group Start</button>
-      <button>Console Group End</button>
-      <button>Console Table</button>
-      <button>Start Timer</button>
-      <button>End Timer</button>
-      <button>Console Trace</button>
-      <button>Trigger a Global Error</button>
+      <button onclick="console.log('Console Log Demo')">Console Log</button>
+      <button onclick="console.error('Console Error Demo')">Console Error</button>
+      <button onclick="console.count('Count Button')">Console Count</button>
+      <button onclick="console.warn('Console Warn Button')">Console Warn</button>
+      <button onclick="console.assert(1==2,{number: 2, errorMsg:'The number does not equal: 3'})">Console Assert</button>
+      <button onclick="console.clear()">Console Clear</button>
+      <button onclick="console.dir(document.getElementById('calculate'))">Console Dir</button>
+      <button onclick="console.dirxml(document.getElementById('calculate'))">Console dirxml</button>
+      <button onclick="console.group()">Console Group Start</button>
+      <button onclick="console.groupEnd()">Console Group End</button>
+      <button onclick="console.table([{'name': 'Software Engineering', 'num':110},{'name': 'Programming Languages', 'num':130}])">Console Table</button>
+      <button onclick="console.time('Timer Button')">Start Timer</button>
+      <button onclick="console.timeEnd('Timer Button')">End Timer</button>
+      <button onclick="deep()">Console Trace</button>
+      <button onclick="triggerError()">Trigger a Global Error</button>
     </section>
   </main>
+
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+  <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "851c5d48c47c47c1998f4d9622e4568d"
+      // for more configuration options, see https://docs.trackjs.com
+    });
+  </script>
 
   <script>
     let form = document.querySelector('form');
@@ -95,13 +103,55 @@
       let firstNum = document.querySelector('#first-num').value;
       let secondNum = document.querySelector('#second-num').value;
       let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+
+      if (operator == '/' && Number(secondNum) == 0) {
+        throw new DivdideByZeroError('You cannot divide by 0!!!');
+      }
+
+      // An error is thrown when line 97 is turned into a comment.
+      try {
+        output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      } catch (error) {
+        console.group('Try Catch Error');
+        console.error(error);
+        console.error('Your operator could not be found!');
+        console.groupEnd('Try Catch Error');
+      } finally {
+        console.log('Calculation Attempted');
+      }
     });
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
 
     // Start your code here
     // You may move this JS to another file if you wish
+    function deepest() {
+      console.trace();
+    }
+    function deeper() {
+      deepest();
+    }
+    function deep() {
+      deeper();
+    }
+
+    class DivdideByZeroError extends Error {
+      constructor(message){
+        super(message);
+        this.name = "DivideByZeroError";
+      }
+    }
+    // Also included code starting on line 99.
+
+    window.onerror = function (message, source, lineno, colno, error) {
+      console.log("Sadly an error happened my friend.");
+      console.error(error);
+      return true; 
+    };
+
+    function triggerError() {
+      nonExistentFunction(); // This will throw a ReferenceError
+    }
   </script>
 </body>
 
